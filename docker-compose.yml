@@ -1,0 +1,38 @@
+version: '3.1'
+
+services:
+
+  redmine:
+    image: redmine:4.2-passenger
+    container_name: redmine
+    depends_on:
+      - redmine_db
+    restart: always
+    ports:
+      - 80:3000
+    environment:
+      REDMINE_DB_MYSQL: redmine_db
+      REDMINE_DB_PASSWORD: example
+      REDMINE_SECRET_KEY_BASE: supersecretkey
+    volumes:
+      - /srv/docker/redmine/redmine_config/configuration.yml:/usr/src/redmine/config/configuration.yml
+      - /srv/docker/redmine/redmine_plugins:/usr/src/redmine/plugins
+      - /srv/docker/redmine/redmine_files:/usr/src/redmine/files
+      - /srv/docker/redmine/redmine_log:/usr/src/redmine/log
+
+  redmine_db:
+    image: mysql:5.7
+    container_name: redmine_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: redmine
+    volumes:
+      - /srv/docker/redmine/mysql:/var/lib/mysql
+
+  redmine_adminer:
+    image: adminer
+    container_name: redmine_adminer
+    restart: always
+    ports:
+      - 3001:8080
